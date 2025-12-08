@@ -1,206 +1,89 @@
-import { useEffect, useState } from 'preact/hooks'
-import { reservationApi } from './services/api'
-import './services/styles.css'
+import ReservasForm from './components/ReservasForm';
+import ReservasList from './components/ReservasList';
+import reservasStore from './stores/reservasStore';
+import './services/styles.css';
+import logo from './images/logo.png';
 
 export function App() {
-  const [reservations, setReservations] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const loadReservations = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const result = await reservationApi.getAllReservations()
-      setReservations(result.data)
-    } catch (err) {
-      setError(err.message)
-      console.error('Error loading reservations:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadReservations()
-  }, [])
+  const { showReservations, setShowReservations } = reservasStore();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
-      <div className="container mx-auto px-4">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            🍽️ Sistema de Reservas de Restaurante
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Aquí podrás reservar una mesa en PRESIK
-          </p>
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+
+      {/* 🔵 Fondo con logo como marca de agua */}
+      <div
+        className="absolute inset-0 bg-center bg-[length:450px_450px] opacity-10 pointer-events-none"
+        style={{ backgroundImage: `url(${logo})` }}
+      />
+
+      {/* 🔵 Todo el contenido va encima del fondo */}
+      <div className="relative z-10">
+
+        {/* Header */}
+        <header className="bg-white shadow-sm">
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+
+              {/* LOGO + TEXTO DEL HEADER */}
+              <div className="flex items-center gap-4 mb-4 md:mb-0">
+                <img src={logo} alt="Logo" className="w-16 h-16 md:w-20 md:h-20" />
+
+                <div className="text-center md:text-left">
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+                    RESERVAS PRESIK
+                  </h1>
+                  <p className="text-gray-600 mt-2">
+                    Sistema de gestión de reservas para restaurante PRESIK
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Panel de estado */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">📊 Estado del Sistema</h2>
+        {/* Contenido Principal */}
+        <main className="container mx-auto px-4 py-8">
+          {!showReservations ? (
+            <>
+              <ReservasForm />
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <span className="font-medium text-green-800">Backend API</span>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-                    ✅ Activo
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                  <span className="font-medium text-blue-800">Base de Datos</span>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                    🗄️ PostgreSQL
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                  <span className="font-medium text-purple-800">Reservas Totales</span>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">
-                    {reservations.length}
-                  </span>
-                </div>
-              </div>
-            </div>
-            {/*
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">📋 Comandos Útiles</h3>
-              <div className="space-y-3">
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <code className="text-sm text-gray-700">cd server && npm run dev</code>
-                  <p className="text-xs text-gray-500 mt-1">Iniciar backend</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <code className="text-sm text-gray-700">cd client && npm run dev</code>
-                  <p className="text-xs text-gray-500 mt-1">Iniciar frontend</p>
-                </div>
-              </div>
-            </div>
-            */}
-          </div>
-
-          {/* Lista de reservas */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">📅 Reservas Recientes</h2>
-                <button
-                  onClick={loadReservations}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                >
-                  Actualizar
-                </button>
-              </div>
-
-              {loading ? (
-                <div className="flex justify-center items-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                </div>
-              ) : error ? (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700 font-medium">Error: {error}</p>
+              {/* Footer con botón Copyright */}
+              <footer className="mt-12 pt-8 border-t border-gray-200">
+                <div className="text-center">
                   <button
-                    onClick={loadReservations}
-                    className="mt-2 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+                    onClick={() => setShowReservations(true)}
+                    className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
                   >
-                    Reintentar
+                    © 2025 Sistema de reservas para restaurante PRESIK
                   </button>
                 </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Cliente
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Fecha/Hora
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Personas
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Mesa
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Estado
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {reservations.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                            No hay reservas disponibles
-                          </td>
-                        </tr>
-                      ) : (
-                        reservations.map((reservation) => (
-                          <tr key={reservation.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4">
-                              <div>
-                                <p className="font-medium text-gray-900">{reservation.customer_name}</p>
-                                <p className="text-sm text-gray-500">{reservation.customer_email}</p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div>
-                                <p className="font-medium text-gray-900">
-                                  {new Date(reservation.reservation_date).toLocaleDateString('es-ES')}
-                                </p>
-                                <p className="text-sm text-gray-500">{reservation.reservation_time}</p>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                {reservation.party_size} personas
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                {reservation.table_number || 'Por asignar'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span
-                                className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${reservation.status === 'confirmed'
-                                  ? 'bg-green-100 text-green-800'
-                                  : reservation.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : reservation.status === 'cancelled'
-                                      ? 'bg-red-100 text-red-800'
-                                      : 'bg-gray-100 text-gray-800'
-                                  }`}
-                              >
-                                {reservation.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+              </footer>
+            </>
+          ) : (
+            <ReservasList />
+          )}
 
-            {/*
-            <div className="mt-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
-              <h3 className="text-xl font-bold mb-2">✅ Día 2 Completado</h3>
-              <p className="opacity-90">
-                Backend API funcionando con PostgreSQL. Mañana implementaremos el formulario de reservas y Zustand.
-              </p>
-            </div>
-            */}
+          {/* Estado del sistema *
+          <div className="mt-8 bg-white rounded-lg shadow p-4">
+            <div className="flex items-center justify-center space-x-6">
+              <div className="flex items-center">
+                <div className="h-3 w-3 rounded-full bg-green-500 mr-2"></div>
+                <span className="text-sm text-gray-600">Backend API: Activo</span>
+              </div>
+              <div className="flex items-center">
+                <div className="h-3 w-3 rounded-full bg-blue-500 mr-2"></div>
+                <span className="text-sm text-gray-600">PostgreSQL: Conectado</span>
+              </div>
+              <div className="flex items-center">
+                <div className="h-3 w-3 rounded-full bg-purple-500 mr-2"></div>
+                <span className="text-sm text-gray-600">Zustand: Configurado</span>
+              </div>
+            </div>            
           </div>
-        </div>
+          */}
+        </main>
+
       </div>
-    </div >
-  )
+    </div>
+  );
 }

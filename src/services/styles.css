@@ -2,56 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* -------------------------------------------------------
-   Estilos globales opcionales
-   ------------------------------------------------------- */
+/* Animaciones personalizadas */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 
-/* Suaviza la tipografía */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Fondo base suave — opcional */
-body {
-    @apply bg-gray-50 text-gray-800 antialiased;
-}
-
-/* Estilos para tablas (si usas tablas en el sistema) */
-.table-header {
-    @apply text-left text-sm font-semibold text-gray-700 uppercase tracking-wider;
-}
-
-.table-cell {
-    @apply px-4 py-2 text-sm text-gray-800;
-}
-
-/* Loader simple */
-.loader {
-    width: 24px;
-    height: 24px;
-    border: 3px solid rgb(59 130 246 / 0.3);
-    /* blue-500/30 */
-    border-top-color: rgb(59 130 246);
-    /* blue-500 */
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
     to {
-        transform: rotate(360deg);
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/* Botón base reutilizable */
-.btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
 }
 
-.btn-primary {
-    @apply bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700;
+/* Estilos personalizados para el rango */
+input[type="range"]::-webkit-slider-thumb {
+    @apply appearance-none h-5 w-5 rounded-full bg-blue-500 cursor-pointer;
 }
 
-.btn-secondary {
-    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+input[type="range"]::-moz-range-thumb {
+    @apply appearance-none h-5 w-5 rounded-full bg-blue-500 cursor-pointer border-0;
+}
+
+/* Estilos para scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+}
+
+/* Transiciones suaves */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }

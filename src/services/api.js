@@ -1,4 +1,6 @@
-const API_BASE_URL = 'https://reservas-restaurante-backend.onrender.com/api';
+const API_BASE_URL = '/api';
+
+//const API_BASE_URL = 'https://reservas-restaurante-backend.onrender.com/api';
 
 export const reservationApi = {
     async getAllReservations() {
